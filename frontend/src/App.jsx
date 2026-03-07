@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard.jsx';
 import Home from './pages/Home.jsx';
 import Insights from './pages/Insights.jsx';
+import Predict from './pages/Predict.jsx';
+import Startups from './pages/Startups.jsx';
 
 function App() {
     return (
@@ -10,6 +12,8 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/insights" element={<Insights />} />
+                    <Route path="/predict" element={<Predict />} />
+                    <Route path="/startups" element={<Startups />} />
                 </Routes>
             </Dashboard>
         </BrowserRouter>

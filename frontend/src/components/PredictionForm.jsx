@@ -48,6 +48,18 @@ function PredictionForm() {
         }
     };
 
+    const getResultColor = (probability) => {
+        if (probability >= 0.7) return '#34d399';
+        if (probability >= 0.4) return '#fbbf24';
+        return '#f87171';
+    };
+
+    const getResultLabel = (probability) => {
+        if (probability >= 0.7) return 'High Probability';
+        if (probability >= 0.4) return 'Moderate Probability';
+        return 'Low Probability';
+    };
+
     return (
         <div className="glass-card prediction-card">
             <form onSubmit={handleSubmit} className="prediction-form">
@@ -116,24 +128,70 @@ function PredictionForm() {
                 </div>
 
                 <button type="submit" className="btn btn-primary predict-btn" disabled={loading}>
-                    {loading ? 'Analyzing…' : '🔮 Predict Funding Success'}
+                    {loading ? (
+                        <>
+                            <span className="btn-spinner"></span>
+                            Analyzing…
+                        </>
+                    ) : (
+                        '🔮 Predict Funding Success'
+                    )}
                 </button>
             </form>
 
             {/* Result */}
             {result && (
                 <div className="prediction-result animate-in">
-                    <p className="result-label text-muted">Funding Success Probability</p>
-                    <p className="result-value">
-                        {(result.funding_success_probability * 100).toFixed(1)}%
-                    </p>
+                    <div className="result-main">
+                        <p className="result-label text-muted">Funding Success Probability</p>
+                        <p
+                            className="result-value"
+                            style={{ color: getResultColor(result.funding_success_probability) }}
+                        >
+                            {(result.funding_success_probability * 100).toFixed(1)}%
+                        </p>
+                        <span
+                            className="result-badge"
+                            style={{
+                                background: `${getResultColor(result.funding_success_probability)}22`,
+                                color: getResultColor(result.funding_success_probability),
+                            }}
+                        >
+                            {getResultLabel(result.funding_success_probability)}
+                        </span>
+                    </div>
+
+                    {/* Feature Importance */}
+                    {result.feature_importance && (
+                        <div className="feature-importance">
+                            <p className="fi-title text-muted">Feature Importance</p>
+                            <div className="fi-bars">
+                                {Object.entries(result.feature_importance)
+                                    .sort(([, a], [, b]) => b - a)
+                                    .map(([feature, importance]) => (
+                                        <div key={feature} className="fi-row">
+                                            <span className="fi-label">{feature.replace(/_/g, ' ')}</span>
+                                            <div className="fi-bar-track">
+                                                <div
+                                                    className="fi-bar-fill"
+                                                    style={{ width: `${importance * 100}%` }}
+                                                ></div>
+                                            </div>
+                                            <span className="fi-value text-muted">
+                                                {(importance * 100).toFixed(0)}%
+                                            </span>
+                                        </div>
+                                    ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
             {/* Error */}
             {error && (
                 <div className="prediction-error animate-in">
-                    <p className="text-danger">{error}</p>
+                    <p className="text-danger">⚠️ {error}</p>
                 </div>
             )}
         </div>

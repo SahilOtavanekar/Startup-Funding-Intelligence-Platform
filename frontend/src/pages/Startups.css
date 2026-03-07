@@ -1,0 +1,144 @@
+/* -----------------------------------------------------------------------
+   Startups Page Styles
+   ----------------------------------------------------------------------- */
+
+.startups-page {
+    padding: var(--space-xl) 0;
+}
+
+/* --- Filters ------------------------------------------------------------ */
+.startup-filters {
+    display: flex;
+    gap: var(--space-md);
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+}
+
+.startup-filters .form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-count {
+    font-size: var(--font-size-sm);
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+}
+
+/* --- Table -------------------------------------------------------------- */
+.table-container {
+    overflow-x: auto;
+    padding: 0;
+}
+
+.startup-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+}
+
+.startup-table thead {
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.startup-table th {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.startup-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.06);
+    vertical-align: middle;
+}
+
+.startup-table tbody tr {
+    transition: background var(--transition-fast);
+}
+
+.startup-table tbody tr:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.startup-name {
+    font-weight: 600;
+    color: var(--color-text-heading);
+}
+
+.funding-amount {
+    font-weight: 600;
+    color: var(--color-success);
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- Badges ------------------------------------------------------------- */
+.industry-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--color-primary-light);
+    font-size: var(--font-size-xs);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.status-badge {
+    display: inline-block;
+    font-size: var(--font-size-xs);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.status-badge.success {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--color-success);
+}
+
+.status-badge.pending {
+    background: rgba(251, 191, 36, 0.15);
+    color: var(--color-warning);
+}
+
+/* --- Loading Spinner (shared) ------------------------------------------- */
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* --- Responsive --------------------------------------------------------- */
+@media (max-width: 768px) {
+    .startup-filters {
+        flex-direction: column;
+    }
+
+    .startup-table {
+        font-size: var(--font-size-xs);
+    }
+
+    .startup-table th,
+    .startup-table td {
+        padding: 0.5rem;
+    }
+}

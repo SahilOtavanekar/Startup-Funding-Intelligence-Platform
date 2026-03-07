@@ -19,6 +19,9 @@ env/
 *.pkl
 mlruns/
 mlflow/experiments/
+backend/mlflow.db
+backend/artifacts/
+backend/app/models/training_data.csv
 
 # Node
 node_modules/

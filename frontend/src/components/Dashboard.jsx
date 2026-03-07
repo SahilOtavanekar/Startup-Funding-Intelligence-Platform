@@ -16,7 +16,7 @@ function Dashboard({ children }) {
                 </div>
 
                 <nav className="sidebar-nav">
-                    <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                    <NavLink to="/" end className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         <span className="nav-icon">🏠</span>
                         Home
                     </NavLink>
@@ -24,11 +24,20 @@ function Dashboard({ children }) {
                         <span className="nav-icon">📊</span>
                         Insights
                     </NavLink>
+                    <NavLink to="/predict" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <span className="nav-icon">🔮</span>
+                        Predict
+                    </NavLink>
+                    <NavLink to="/startups" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <span className="nav-icon">🏢</span>
+                        Startups
+                    </NavLink>
                 </nav>
 
                 <div className="sidebar-footer">
-                    <p className="text-muted" style={{ fontSize: '0.75rem' }}>
-                        v1.0.0 — AI-Powered Analytics
+                    <div className="sidebar-divider"></div>
+                    <p className="text-muted" style={{ fontSize: '0.7rem', textAlign: 'center', lineHeight: 1.5 }}>
+                        v1.0.0<br />AI-Powered Analytics
                     </p>
                 </div>
             </aside>

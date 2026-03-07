@@ -1,17 +1,46 @@
-/* --- Home Page ---------------------------------------------------------- */
+/* -----------------------------------------------------------------------
+   Home Page Styles
+   ----------------------------------------------------------------------- */
+
 .home-page {
-    max-width: 960px;
+    padding: var(--space-xl) 0;
+    max-width: 1000px;
 }
 
+/* --- Hero --------------------------------------------------------------- */
 .hero {
     margin-bottom: var(--space-2xl);
 }
 
+.hero-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    color: var(--color-primary-light);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    margin-bottom: var(--space-lg);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
 .hero-title {
-    font-size: var(--font-size-4xl);
-    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.1;
     margin-bottom: var(--space-md);
-    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--color-text-heading), var(--color-primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-title .text-accent {
+    background: linear-gradient(135deg, var(--color-accent), #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .hero-subtitle {
@@ -21,19 +50,126 @@
 }
 
 /* --- Stats -------------------------------------------------------------- */
+.stats-row {
+    margin-bottom: var(--space-2xl);
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+}
+
 .stat-card {
     text-align: center;
-    padding: var(--space-xl);
+    padding: var(--space-xl) var(--space-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-sm);
 }
 
 .stat-value {
     font-size: var(--font-size-3xl);
     font-weight: 800;
+    line-height: 1.1;
     margin-bottom: var(--space-xs);
 }
 
 .stat-label {
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+}
+
+/* --- Section Header ----------------------------------------------------- */
+.section-header {
+    margin-bottom: var(--space-xl);
+}
+
+.section-header h2 {
+    margin-bottom: var(--space-sm);
+}
+
+.section-header p {
+    font-size: var(--font-size-sm);
+    max-width: 500px;
+}
+
+/* --- Features ----------------------------------------------------------- */
+.features-section {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-2xl);
+    border-top: 1px solid var(--color-border);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-lg);
+}
+
+.feature-card {
+    text-align: center;
+    padding: var(--space-xl);
+}
+
+.feature-card:hover {
+    border-color: var(--color-primary);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+}
+
+.feature-card h4 {
+    margin-bottom: var(--space-sm);
+    font-size: var(--font-size-base);
+}
+
+.feature-card p {
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+}
+
+/* --- Responsive --------------------------------------------------------- */
+@media (max-width: 768px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
 }

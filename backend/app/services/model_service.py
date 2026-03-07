@@ -1,25 +1,43 @@
 """
 Model Service — load trained model and run inference.
 
-Handles loading model.pkl and providing predictions via the predict() method.
+Handles loading model.pkl and preprocessing_artifacts.pkl,
+then providing predictions via the predict() method.
 """
 
 import os
+import logging
 import joblib
 import numpy as np
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "model.pkl")
+logger = logging.getLogger(__name__)
+
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
+MODEL_PATH = os.path.join(MODEL_DIR, "model.pkl")
+ARTIFACTS_PATH = os.path.join(MODEL_DIR, "preprocessing_artifacts.pkl")
 
 _model = None
+_artifacts = None
 
 
 def load_model():
-    """Load the trained model from disk."""
-    global _model
+    """Load the trained model and preprocessing artifacts from disk."""
+    global _model, _artifacts
+
     if os.path.exists(MODEL_PATH):
         _model = joblib.load(MODEL_PATH)
+        logger.info("✅ Model loaded from %s", MODEL_PATH)
     else:
         _model = None
+        logger.warning("⚠️  Model file not found at %s", MODEL_PATH)
+
+    if os.path.exists(ARTIFACTS_PATH):
+        _artifacts = joblib.load(ARTIFACTS_PATH)
+        logger.info("✅ Preprocessing artifacts loaded")
+    else:
+        _artifacts = None
+        logger.warning("⚠️  Preprocessing artifacts not found at %s", ARTIFACTS_PATH)
+
     return _model
 
 
@@ -31,30 +49,100 @@ def get_model():
     return _model
 
 
-def predict(features: dict) -> float:
+def get_artifacts():
+    """Return preprocessing artifacts."""
+    global _artifacts
+    if _artifacts is None:
+        load_model()
+    return _artifacts
+
+
+def predict(features: dict) -> dict:
     """
     Run inference on a single sample.
 
     Parameters
     ----------
     features : dict
-        Keys: industry (encoded), team_size, startup_age, investor_count
+        Keys: industry, team_size, startup_age, investor_count
+        Optionally: location, previous_funding_rounds
 
     Returns
     -------
-    float
-        Predicted probability of funding success.
+    dict
+        {
+            "funding_success_probability": float,
+            "feature_importance": dict | None
+        }
     """
     model = get_model()
     if model is None:
-        raise RuntimeError("Model not available. Train the model first (Phase 5).")
+        raise RuntimeError(
+            "Model not available. Train the model first: "
+            "python -m app.models.train_model"
+        )
 
-    # Build feature array in expected order
+    artifacts = get_artifacts()
+
+    # --- Encode categoricals ------------------------------------------------
+    industry_val = features.get("industry", "Technology")
+    location_val = features.get("location", "San Francisco, CA")
+
+    industry_encoder = artifacts["industry_encoder"]
+    location_encoder = artifacts["location_encoder"]
+
+    # Handle unseen categories gracefully
+    try:
+        industry_encoded = industry_encoder.transform([industry_val])[0]
+    except ValueError:
+        industry_encoded = 0  # fallback
+
+    try:
+        location_encoded = location_encoder.transform([location_val])[0]
+    except ValueError:
+        location_encoded = 0  # fallback
+
+    team_size = float(features.get("team_size", 5))
+    startup_age = float(features.get("startup_age", 3))
+    investor_count = float(features.get("investor_count", 2))
+    previous_rounds = float(features.get("previous_funding_rounds", 1))
+
+    # --- Scale numerical features -------------------------------------------
+    scaler = artifacts["scaler"]
+    numerical_vals = np.array([[team_size, startup_age, investor_count, previous_rounds]])
+    scaled = scaler.transform(numerical_vals)[0]
+
+    # --- Build feature vector in expected order------------------------------
     X = np.array([[
-        features["industry_encoded"],
-        features["team_size"],
-        features["startup_age"],
-        features["investor_count"],
+        industry_encoded,
+        location_encoded,
+        scaled[0],  # team_size (scaled)
+        scaled[1],  # startup_age (scaled)
+        scaled[2],  # investor_count (scaled)
+        scaled[3],  # previous_funding_rounds (scaled)
     ]])
+
     proba = model.predict_proba(X)[0][1]  # probability of class 1 (success)
-    return float(proba)
+
+    # --- Feature importance (from model) ------------------------------------
+    try:
+        importances = model.feature_importances_
+        feature_names = artifacts.get("feature_cols", [
+            "industry", "location", "team_size",
+            "startup_age", "investor_count", "previous_funding_rounds"
+        ])
+        # Make human-readable names
+        readable_names = [
+            n.replace("_encoded", "") for n in feature_names
+        ]
+        importance_dict = {
+            name: round(float(imp), 4)
+            for name, imp in zip(readable_names, importances)
+        }
+    except Exception:
+        importance_dict = None
+
+    return {
+        "funding_success_probability": float(round(proba, 4)),
+        "feature_importance": importance_dict,
+    }
