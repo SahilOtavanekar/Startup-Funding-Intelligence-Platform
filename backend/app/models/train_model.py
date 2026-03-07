@@ -16,6 +16,7 @@ from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+from sklearn.calibration import CalibratedClassifierCV
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -112,14 +113,23 @@ def train(df: pd.DataFrame | None = None, target_col: str = "funding_success") -
     )
 
     # --- Train ---------------------------------------------------------------
+    # Calculate Class Imbalance Weight
+    neg_count = sum(y_train == 0)
+    pos_count = sum(y_train == 1)
+    scale_pos_weight = neg_count / pos_count if pos_count > 0 else 1.0
+
     params = {
         "learning_rate": 0.1,
         "max_depth": 6,
         "n_estimators": 200,
         "eval_metric": "logloss",
         "random_state": 42,
+        "scale_pos_weight": scale_pos_weight, # Handles the minority class (funded startups)
     }
-    model = XGBClassifier(**params)
+    xgb_base = XGBClassifier(**params)
+    
+    # Wrap with Platt Scaling (Isotonic Regression) to ensure output is a true calibrated probability
+    model = CalibratedClassifierCV(estimator=xgb_base, method='sigmoid', cv=5)
 
     # Try MLflow logging (graceful fallback if unavailable)
     try:
@@ -142,7 +152,8 @@ def train(df: pd.DataFrame | None = None, target_col: str = "funding_success") -
 
             mlflow.log_params(params)
             mlflow.log_metrics(metrics)
-            mlflow.xgboost.log_model(model, artifact_path="model")
+            import mlflow.sklearn
+            mlflow.sklearn.log_model(model, artifact_path="model")
 
             logger.info("📊 MLflow run logged successfully.")
 

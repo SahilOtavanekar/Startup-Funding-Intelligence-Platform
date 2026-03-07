@@ -88,7 +88,23 @@ def scrape_live_fundings() -> list[dict]:
             if 'Startups Raised' in startup_name or len(startup_name) > 40:
                 continue
 
-            # Only append if we found an amount (or even if we didn't, it's a real startup)
+            # VALIDATION LAYER
+            # 1. Require an actual numeric funding amount (discard vague PR like "secures fresh capital")
+            if funding_amount <= 0:
+                logger.warning(f"Discarding record (No Amount): {headline}")
+                continue
+                
+            # 2. Require a clean, short startup name (discard failing regex phrases)
+            if len(startup_name) > 30 or " " * 4 in startup_name:
+                logger.warning(f"Discarding record (Messy Name): {startup_name}")
+                continue
+                
+            # 3. Discard likely aggregate articles containing 'startups' (plural)
+            if 'startups' in startup_name.lower() or 'companies' in startup_name.lower():
+                logger.warning(f"Discarding record (Aggregate News): {headline}")
+                continue
+
+            # Passed Validation
             results.append({
                 "startup_name": startup_name,
                 "industry": "Technology", # Base assumption
@@ -96,7 +112,7 @@ def scrape_live_fundings() -> list[dict]:
                 "founded_year": datetime.now().year - 2,
                 "startup_age": 2,         # Derived age
                 "team_size": 45, 
-                "total_raised": funding_amount if funding_amount > 0 else 1_000_000,
+                "total_raised": funding_amount,
                 "previous_funding_rounds": 1 if 'Seed' in funding_round else 3,
                 "investor_count": 2,
                 "funding_success": 1,
