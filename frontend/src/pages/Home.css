@@ -1,0 +1,39 @@
+/* --- Home Page ---------------------------------------------------------- */
+.home-page {
+    max-width: 960px;
+}
+
+.hero {
+    margin-bottom: var(--space-2xl);
+}
+
+.hero-title {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+    margin-bottom: var(--space-md);
+    letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+    font-size: var(--font-size-lg);
+    max-width: 600px;
+    line-height: 1.7;
+}
+
+/* --- Stats -------------------------------------------------------------- */
+.stat-card {
+    text-align: center;
+    padding: var(--space-xl);
+}
+
+.stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: 800;
+    margin-bottom: var(--space-xs);
+}
+
+.stat-label {
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}

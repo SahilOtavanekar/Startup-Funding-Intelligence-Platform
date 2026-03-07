@@ -1,0 +1,60 @@
+/* --- Prediction Form ---------------------------------------------------- */
+.prediction-card {
+    max-width: 700px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.predict-btn {
+    width: 100%;
+    padding: 1rem;
+    font-size: var(--font-size-base);
+}
+
+.predict-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* --- Result ------------------------------------------------------------ */
+.prediction-result {
+    margin-top: var(--space-xl);
+    text-align: center;
+    padding: var(--space-xl);
+    background: var(--color-accent-glow);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+}
+
+.result-label {
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--space-sm);
+}
+
+.result-value {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+    color: var(--color-accent);
+}
+
+/* --- Error ------------------------------------------------------------- */
+.prediction-error {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(248, 113, 113, 0.1);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+@media (max-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,16 @@
+/* --- Charts Layout ------------------------------------------------------ */
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: var(--space-lg);
+}
+
+.chart-card {
+    min-height: 380px;
+}
+
+@media (max-width: 500px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  # -----------------------------------------------------------------------
+  # FastAPI Backend
+  # -----------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mlflow
+
+  # -----------------------------------------------------------------------
+  # React Frontend (dev server)
+  # -----------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  # -----------------------------------------------------------------------
+  # MLflow Tracking Server
+  # -----------------------------------------------------------------------
+  mlflow:
+    image: python:3.11-slim
+    command: >
+      bash -c "pip install mlflow==2.19.0 &&
+               mlflow server --host 0.0.0.0 --port 5000
+               --backend-store-uri sqlite:///mlflow.db
+               --default-artifact-root /mlflow/artifacts"
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./mlflow:/mlflow
