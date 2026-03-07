@@ -11,7 +11,8 @@ import logging
 from collections import defaultdict
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
+from app.core.limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +35,22 @@ def _load_local_data() -> pd.DataFrame:
 # GET /industry-trends
 # ---------------------------------------------------------------------------
 @router.get("/industry-trends")
-async def industry_trends():
-    """Return funding distribution and growth trends by industry."""
+@limiter.limit("30/minute")
+async def industry_trends(request: Request):
+    """Return funding distribution and growth trends by industry (Supabase or Local)."""
     try:
+        # Try Supabase first
+        supabase_url = os.getenv("SUPABASE_URL", "")
+        if supabase_url and supabase_url != "https://your-project.supabase.co":
+            try:
+                from app.services.data_service import get_industry_analytics_data
+                data = get_industry_analytics_data()
+                if data:
+                    return data
+            except Exception as e:
+                logger.warning("Supabase Industry Trends failed: %s", e)
+
+        # Fallback to local CSV
         df = _load_local_data()
 
         # --- Funding by Industry -------------------------------------------
@@ -128,7 +142,8 @@ async def industry_trends():
 # GET /startups
 # ---------------------------------------------------------------------------
 @router.get("/startups")
-async def list_startups(limit: int = 100):
+@limiter.limit("30/minute")
+async def list_startups(request: Request, limit: int = 100):
     """Return startup records from local data (or Supabase if configured)."""
     try:
         # Try Supabase first

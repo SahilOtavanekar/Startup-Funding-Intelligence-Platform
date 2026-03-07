@@ -57,13 +57,48 @@ def get_funding_rounds(startup_id: str | None = None):
 # Analytics
 # ---------------------------------------------------------------------------
 
-def get_industry_trends():
-    """Aggregate funding data by industry for trend analysis."""
+def get_industry_analytics_data():
+    """Aggregate funding data from Supabase into the dashboard JSON format."""
     client = get_client()
-    # Fetch all funding rounds joined with startup industry
-    response = (
-        client.table("funding_rounds")
-        .select("funding_amount, funding_round, date, startups(industry)")
-        .execute()
-    )
-    return response.data
+    
+    # Fetch data
+    startups_res = client.table("startups").select("*").execute()
+    rounds_res = client.table("funding_rounds").select("*").execute()
+    
+    if not startups_res.data:
+        return None
+        
+    import pandas as pd
+    df_s = pd.DataFrame(startups_res.data)
+    df_r = pd.DataFrame(rounds_res.data)
+    
+    # Merge if rounds exist
+    if not df_r.empty:
+        df = pd.merge(df_s, df_r, left_on="id", right_on="startup_id", how="left")
+    else:
+        df = df_s
+        df["funding_amount"] = 0
+        df["funding_round"] = "None"
+        
+    df["funding_success"] = df["funding_round"].apply(lambda x: 1 if "Growth" in str(x) else 0)
+
+    # Aggregations (Matched logic from analytics.py)
+    industry_funding = df.groupby("industry")["funding_amount"].sum().sort_values(ascending=False).reset_index()
+    industry_funding.columns = ["name", "funding"]
+    industry_funding["funding"] = (industry_funding["funding"] / 1_000_000).round(1)
+
+    success_rate = df.groupby("industry")["funding_success"].mean().sort_values(ascending=False).reset_index()
+    success_rate.columns = ["name", "success_rate"]
+    success_rate["success_rate"] = (success_rate["success_rate"] * 100).round(1)
+
+    location_counts = df["location"].value_counts().head(10).reset_index()
+    location_counts.columns = ["name", "count"]
+
+    return {
+        "industry_funding": industry_funding.to_dict(orient="records"),
+        "success_rate": success_rate.to_dict(orient="records"),
+        "location_distribution": location_counts.to_dict(orient="records"),
+        "total_startups": len(df_s),
+        "total_funded": int(df["funding_success"].sum()),
+        "source": "supabase"
+    }

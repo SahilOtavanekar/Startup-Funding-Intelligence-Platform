@@ -4,11 +4,12 @@ Prediction routes — POST /predict
 Accepts startup parameters and returns the predicted funding success probability.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field
 import logging
 
 from app.services.model_service import predict
+from app.core.limiter import limiter
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,8 @@ class PredictionResponse(BaseModel):
 # Endpoint
 # ---------------------------------------------------------------------------
 @router.post("/predict", response_model=PredictionResponse)
-async def predict_funding(request: PredictionRequest):
+@limiter.limit("15/minute")
+async def predict_funding(request: PredictionRequest, request_meta: Request):
     """Predict the probability of funding success for a startup."""
     try:
         result = predict(request.model_dump())

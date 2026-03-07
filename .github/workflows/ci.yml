@@ -1,0 +1,40 @@
+name: Python Backend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 backend/app --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 backend/app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Start FastAPI Server Check (Mock run)
+      run: |
+        export API_KEY="startup-intelligence-local-dev-key"
+        # Since we don't have Pytest cases right now, we can run a basic sanity check
+        # making sure the app actually boots up without crashing on imports.
+        python -c "from app.main import app; print('Backend loaded successfully')"
+      working-directory: ./backend
