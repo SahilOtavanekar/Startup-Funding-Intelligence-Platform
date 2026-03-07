@@ -126,20 +126,35 @@ def predict(features: dict) -> dict:
 
     # --- Feature importance (from model) ------------------------------------
     try:
-        importances = model.feature_importances_
-        feature_names = artifacts.get("feature_cols", [
-            "industry", "location", "team_size",
-            "startup_age", "investor_count", "previous_funding_rounds"
-        ])
-        # Make human-readable names
-        readable_names = [
-            n.replace("_encoded", "") for n in feature_names
-        ]
-        importance_dict = {
-            name: round(float(imp), 4)
-            for name, imp in zip(readable_names, importances)
-        }
-    except Exception:
+        if hasattr(model, "feature_importances_"):
+            importances = model.feature_importances_
+        elif hasattr(model, "calibrated_classifiers_"):
+            # Average importances from all folds in the calibrated ensemble
+            importances = np.mean([
+                clf.estimator.feature_importances_ 
+                for clf in model.calibrated_classifiers_
+                if hasattr(clf.estimator, "feature_importances_")
+            ], axis=0)
+        else:
+            importances = None
+
+        if importances is not None:
+            feature_names = artifacts.get("feature_cols", [
+                "industry", "location", "team_size",
+                "startup_age", "investor_count", "previous_funding_rounds"
+            ])
+            # Make human-readable names
+            readable_names = [
+                n.replace("_encoded", "") for n in feature_names
+            ]
+            importance_dict = {
+                name: round(float(imp), 4)
+                for name, imp in zip(readable_names, importances)
+            }
+        else:
+            importance_dict = None
+    except Exception as e:
+        logger.warning("Could not extract feature importance: %s", e)
         importance_dict = None
 
     return {

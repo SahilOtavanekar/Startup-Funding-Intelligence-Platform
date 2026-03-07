@@ -33,10 +33,19 @@ def get_client() -> Client:
 # ---------------------------------------------------------------------------
 
 def get_all_startups(limit: int = 100):
-    """Fetch startup records from the database."""
+    """Fetch startup records from the database with aggregated funding amounts."""
     client = get_client()
-    response = client.table("startups").select("*").limit(limit).execute()
-    return response.data
+    # Fetch startups and their related funding rounds
+    response = client.table("startups").select("*, funding_rounds(funding_amount)").limit(limit).execute()
+    
+    data = response.data
+    # Flatten the result: sum(funding_rounds.funding_amount) as total_raised
+    for item in data:
+        rounds = item.pop("funding_rounds", [])
+        total = sum(r["funding_amount"] for r in rounds if r.get("funding_amount"))
+        item["total_raised"] = total
+        
+    return data
 
 
 # ---------------------------------------------------------------------------
@@ -91,14 +100,39 @@ def get_industry_analytics_data():
     success_rate.columns = ["name", "success_rate"]
     success_rate["success_rate"] = (success_rate["success_rate"] * 100).round(1)
 
+    # --- Funding by Year -----------------------------------------------
+    year_funding = df.groupby("founded_year")["funding_amount"].sum().reset_index()
+    year_funding.columns = ["year", "amount"]
+    year_funding["amount"] = (year_funding["amount"] / 1_000_000).round(1)
+    year_funding = year_funding.sort_values("year")
+
+    # --- Funding Round Distribution ------------------------------------
+    round_counts = df["funding_round"].value_counts()
+    round_distribution = [
+        {"name": str(k), "value": int(v)}
+        for k, v in round_counts.items()
+        if k != "None"
+    ]
+
+    # --- Location Distribution -----------------------------------------
     location_counts = df["location"].value_counts().head(10).reset_index()
     location_counts.columns = ["name", "count"]
+
+    # --- Average team size by success ----------------------------------
+    team_by_success = df.groupby("funding_success")["team_size"].mean().reset_index()
+    team_by_success.columns = ["success", "avg_team_size"]
+    team_by_success["success"] = team_by_success["success"].map({0: "Not Funded", 1: "Funded"})
+    team_by_success["avg_team_size"] = team_by_success["avg_team_size"].round(1)
 
     return {
         "industry_funding": industry_funding.to_dict(orient="records"),
         "success_rate": success_rate.to_dict(orient="records"),
+        "year_funding": year_funding.to_dict(orient="records"),
+        "round_distribution": round_distribution,
         "location_distribution": location_counts.to_dict(orient="records"),
+        "team_by_success": team_by_success.to_dict(orient="records"),
         "total_startups": len(df_s),
         "total_funded": int(df["funding_success"].sum()),
+        "avg_funding": round(float(df["funding_amount"].mean() / 1_000_000), 2) if not df.empty else 0,
         "source": "supabase"
     }

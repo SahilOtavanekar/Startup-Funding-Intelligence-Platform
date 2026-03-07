@@ -49,10 +49,10 @@ class PredictionResponse(BaseModel):
 # ---------------------------------------------------------------------------
 @router.post("/predict", response_model=PredictionResponse)
 @limiter.limit("15/minute")
-async def predict_funding(request: PredictionRequest, request_meta: Request):
+async def predict_funding(payload: PredictionRequest, request: Request):
     """Predict the probability of funding success for a startup."""
     try:
-        result = predict(request.model_dump())
+        result = predict(payload.model_dump())
         return PredictionResponse(
             funding_success_probability=result["funding_success_probability"],
             feature_importance=result.get("feature_importance"),

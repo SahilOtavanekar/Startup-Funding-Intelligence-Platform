@@ -17,6 +17,7 @@ function PredictionForm() {
         team_size: '',
         startup_age: '',
         investor_count: '',
+        location: '',
     });
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ function PredictionForm() {
                 team_size: parseInt(form.team_size, 10),
                 startup_age: parseInt(form.startup_age, 10),
                 investor_count: parseInt(form.investor_count, 10),
+                location: form.location || 'Mumbai',
             };
             const data = await predictFunding(payload);
             setResult(data);
@@ -121,6 +123,20 @@ function PredictionForm() {
                             placeholder="e.g. 5"
                             min="0"
                             value={form.investor_count}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label" htmlFor="location">Location</label>
+                        <input
+                            id="location"
+                            name="location"
+                            type="text"
+                            className="form-input"
+                            placeholder="e.g. Mumbai"
+                            value={form.location}
                             onChange={handleChange}
                             required
                         />
