@@ -16,30 +16,34 @@ A high-performance, **ML-powered analytics platform** for uncovering insights in
 *   **Prophet Integration:** Uses the **Facebook Prophet** model to analyze historical funding waves and generate a 5-year predictive market forecast.
 *   **Smooth Connection:** Visual transition between historical data (Cyan) and predictive simulation (Gold).
 
-### 🔥 **Trending Startups Leaderboard**
-*   **Growth Velocity Algorithm:** Ranks startups not just by "total raised," but by **Operational Momentum** (Capital Raised ÷ Company Age).
-*   **Momentum Score:** A proprietary 1–99 score based on funding velocity and investor backing.
+### 🔥 **Trending Startups & Live ETtech Momentum**
+*   **Weighted Momentum Algorithm:** Ranks startups using a scientifically weighted formula:
+    *   **60% Weight:** Recent Funding Activity (2024–2025 rounds).
+    *   **30% Weight:** Annualized Growth Rate (Total Capital ÷ Age).
+    *   **10% Weight:** Institutional Backing & Round Count.
+*   **Live Data Scraping:** Includes a headless extraction engine for the **Economic Times (ETtech) Deals Digest**, merging the latest 2025/2026 funding news directly into the platform's analytical brain.
 
 ### 🔎 **Global Startup Database**
-*   **Full-Text Search:** Search through all **3,044 preprocessed startup records** instantly.
+*   **Full-Text Search:** Search through all **3,097 preprocessed startup records** instantly.
 *   **Deep Filtering:** Filter the entire dataset by industry, age, or location with server-side performance.
 
 ---
 
 ## 🛠️ Technology Stack
 
-*   **Backend:** Python 3.11, FastAPI, Pandas, Prophet (ML).
+*   **Backend:** Python 3.11, FastAPI, Pandas, Prophet (ML), Headless Scraping.
 *   **Frontend:** React, Vite, Recharts, Vanilla CSS (Glassmorphism).
-*   **Data Source:** Real Kaggle mirror of the **Indian Startup Funding** dataset.
+*   **Data Source:** Hybrid (Kaggle Historical + Economic Times Live Deals).
 
 ---
 
 ## 🧪 Data Pipeline & Preprocessing
 
-The project features a standalone data cleaning engine (`seed_data.py`) that transforms raw funding logs into a research-ready database:
-*   **Imputation:** Mathematically infers missing company ages and team sizes based on capital ratios.
-*   **Normalization:** Merges historical naming conflicts (e.g., *Bangalore* → *Bengaluru*) to ensure statistical accuracy.
-*   **Classification:** Maps over 800+ raw industry verticals into clean, manageable categories.
+The project features an advanced multi-source data merging engine (`merge_scraped_data.py`) that:
+*   **Synthesizes Sources:** Deduplicates 3,000+ historical Kaggle records with real-time news from ET Startups.
+*   **Intelligent Currency Parsing:** Automatically converts "Cr" (Crores) and "Lakhs" to USD equivalents using the latest exchange rates.
+*   **Entity Normalization:** Standardizes locations (e.g., *Bangalore* → *Bengaluru*) and industry classifications to ensure statistical integrity.
+
 
 ---
 

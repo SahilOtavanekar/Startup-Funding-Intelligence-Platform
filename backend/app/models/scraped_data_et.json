@@ -1,0 +1,142 @@
+[
+  {
+    "startup_name": "Zepto",
+    "amount": "$300 million",
+    "sector": "Quick Commerce",
+    "location": "Mumbai",
+    "round_type": "Series G"
+  },
+  {
+    "startup_name": "MoEngage",
+    "amount": "$280 million",
+    "sector": "SaaS/Martech",
+    "location": "Bengaluru",
+    "round_type": "Extended Round"
+  },
+  {
+    "startup_name": "Lenskart",
+    "amount": "$200 million",
+    "sector": "Eyewear/E-commerce",
+    "location": "Gurugram",
+    "round_type": "Secondary"
+  },
+  {
+    "startup_name": "Weaver Services",
+    "amount": "$156 million",
+    "sector": "Proptech/Housing Finance",
+    "location": "Bengaluru",
+    "round_type": "Series A/B"
+  },
+  {
+    "startup_name": "Neo Group",
+    "amount": "$84 million",
+    "sector": "Wealth Management",
+    "location": "Mumbai",
+    "round_type": "Growth"
+  },
+  {
+    "startup_name": "InCred Finance",
+    "amount": "$60 million",
+    "sector": "Fintech",
+    "location": "Mumbai",
+    "round_type": "Growth"
+  },
+  {
+    "startup_name": "Digantara",
+    "amount": "$50 million",
+    "sector": "Spacetech",
+    "location": "Bengaluru",
+    "round_type": "Series B"
+  },
+  {
+    "startup_name": "Cultfit",
+    "amount": "$47 million",
+    "sector": "Health/Fitness",
+    "location": "Bengaluru",
+    "round_type": "Growth"
+  },
+  {
+    "startup_name": "Ecofy",
+    "amount": "$43 million",
+    "sector": "Climate Fintech",
+    "location": "Mumbai",
+    "round_type": "Series B/Growth"
+  },
+  {
+    "startup_name": "Atlys",
+    "amount": "$36 million",
+    "sector": "Visa/Travel",
+    "location": "Mumbai",
+    "round_type": "Series B"
+  },
+  {
+    "startup_name": "Atomicwork",
+    "amount": "$25 million",
+    "sector": "SaaS/HR",
+    "location": "Bengaluru",
+    "round_type": "Series A"
+  },
+  {
+    "startup_name": "Aerchain",
+    "amount": "$13 million",
+    "sector": "SaaS/Procurement",
+    "location": "Bengaluru",
+    "round_type": "Series A"
+  },
+  {
+    "startup_name": "Innov8",
+    "amount": "$13 million",
+    "sector": "Coworking",
+    "location": "India",
+    "round_type": "Growth"
+  },
+  {
+    "startup_name": "Scapia",
+    "amount": "$10 million",
+    "sector": "Fintech/Travel",
+    "location": "Bengaluru",
+    "round_type": "Series A"
+  },
+  {
+    "startup_name": "Burger Singh",
+    "amount": "$8.8 million",
+    "sector": "Food/QSR",
+    "location": "Gurugram",
+    "round_type": "Series B"
+  },
+  {
+    "startup_name": "Wow Momo",
+    "amount": "$8.35 million",
+    "sector": "Food/QSR",
+    "location": "India",
+    "round_type": "Growth"
+  },
+  {
+    "startup_name": "Euler Motors",
+    "amount": "$8.1 million",
+    "sector": "EV",
+    "location": "Delhi/NCR",
+    "round_type": "Series C extension"
+  },
+  {
+    "startup_name": "Bidso",
+    "amount": "Rs 63 crore",
+    "sector": "Manufacturing",
+    "location": "Gurugram",
+    "round_type": "Series A"
+  },
+  {
+    "startup_name": "VerbaFlo",
+    "amount": "$7 million",
+    "sector": "AI/B2B",
+    "location": "India",
+    "round_type": "Seed/Series A"
+  },
+  {
+    "startup_name": "Officebanao",
+    "amount": "$4 million",
+    "sector": "Commercial Interiors",
+    "location": "Gurugram",
+    "round_type": "Series A"
+  }
+]

@@ -125,13 +125,36 @@ def get_top_growing_startups(industry: str = None, location: str = None, limit: 
     if len(young_df) == 0:
         young_df = df.copy() # fallback if no young startups
         
-    # Growth Score: Funding Velocity (total raised per year of existence)
-    young_df['funding_velocity'] = young_df['total_raised'] / young_df['startup_age'].clip(lower=1)
+    # Growth Score: Derived from Recent Funding, Growth Rate and Activity
+    # Logic: 
+    # 1. funding_last_2_years: Funding received recently (2024/2025 startups)
+    # 2. funding_growth_rate: Measured as Annualized Funding (Total / Age)
+    # 3. recent_activity_score: Factor in age and round count
     
-    # Sort by funding velocity descending
-    top_df = young_df.sort_values(by=['funding_velocity', 'investor_count'], ascending=[False, False]).head(limit)
+    young_df['funding_last_2_years'] = young_df.apply(
+        lambda x: x['total_raised'] if x['founded_year'] >= 2024 else 0, axis=1
+    )
+    young_df['funding_growth_rate'] = young_df['total_raised'] / young_df['startup_age'].clip(lower=1)
+    young_df['recent_activity_score'] = young_df.apply(
+        lambda x: 10 if x['founded_year'] >= 2024 else (x['previous_funding_rounds'] * 2 if x['previous_funding_rounds'] > 0 else 1),
+        axis=1
+    )
+    
+    # Calculate Raw Momentum (User's formula)
+    # momentum = (funding_last_2_years * 0.6 + funding_growth_rate * 0.3 + recent_activity_score * 0.1)
+    young_df['raw_momentum'] = (
+        (young_df['funding_last_2_years'] * 0.6) + 
+        (young_df['funding_growth_rate'] * 0.3) + 
+        (young_df['recent_activity_score'] * 100_000) # Scale activity to funding levels
+    )
+    
+    # Sort by the new raw momentum score
+    top_df = young_df.sort_values(by='raw_momentum', ascending=False).head(limit)
     
     results = []
+    # Identify the max momentum in this specific list to scale properly to 99
+    max_raw = top_df['raw_momentum'].max() if not top_df.empty else 1
+    
     for _, row in top_df.iterrows():
         funding = row['total_raised']
         if funding >= 1_000_000_000:
@@ -141,9 +164,9 @@ def get_top_growing_startups(industry: str = None, location: str = None, limit: 
         else:
             funding_str = f"${funding / 1_000:.0f}K"
             
-        # Create a visual momentum score 1-100
-        base_score = min(99, int((row['funding_velocity'] / 1_000_000) * 2 + (row['investor_count'] * 3)))
-        momentum = max(50, base_score) # floor at 50 for top list
+        # Scale the score to 0-99 visually
+        score = int((row['raw_momentum'] / max_raw) * 99) if max_raw > 0 else 0
+        momentum = max(min(99, score), 40) # Keep between 40-99 for visibility
         
         results.append({
             "startup_name": row['startup_name'],

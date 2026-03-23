@@ -10,6 +10,7 @@ function Startups() {
     const [allIndustries, setAllIndustries] = useState([]);
     const [loading, setLoading] = useState(true);
     const [totalMatches, setTotalMatches] = useState(0);
+    const [totalDataset, setTotalDataset] = useState(0);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterIndustry, setFilterIndustry] = useState('');
@@ -35,6 +36,7 @@ function Startups() {
             const data = await getStartups(searchTerm, filterIndustry);
             setStartups(data.startups || []);
             setTotalMatches(data.total_matches || 0);
+            setTotalDataset(data.total_dataset || 0);
         } catch (err) {
             setError('Search failed. Check if backend is alive.');
         } finally {
@@ -60,7 +62,7 @@ function Startups() {
                 Startup <span className="text-accent">Database</span>
             </h1>
             <p className="text-muted mb-xl" style={{ maxWidth: 550 }}>
-                Explore all 3,044 startups in our dataset. Filter by industry or search by name.
+                Explore all {totalDataset.toLocaleString()} startups in our dataset. Filter by industry or search by name.
             </p>
 
             {error && (
@@ -93,7 +95,7 @@ function Startups() {
                     </select>
                 </div>
                 <div className="filter-count text-muted">
-                    {totalMatches} of 3,044
+                    {totalMatches.toLocaleString()} of {totalDataset.toLocaleString()}
                 </div>
             </div>
 
@@ -124,7 +126,9 @@ function Startups() {
                                 <td>{startup.team_size}</td>
                                 <td>{startup.investor_count}</td>
                                 <td className="funding-amount">
-                                    ${(startup.total_raised / 1_000_000).toFixed(1)}M
+                                    {startup.total_raised >= 1000000 
+                                      ? `$${(startup.total_raised / 1000000).toFixed(1)}M` 
+                                      : `$${(startup.total_raised / 1000).toFixed(0)}K`}
                                 </td>
                                 <td>
                                     <span className={`status-badge ${startup.funding_success ? 'success' : 'pending'}`}>
