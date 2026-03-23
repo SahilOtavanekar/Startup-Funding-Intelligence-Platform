@@ -96,7 +96,7 @@ def build_real_indian_dataset():
             "founded_year": current_year - imputed_age,
             "startup_age": imputed_age,
             "team_size": team_size,
-            "previous_funding_rounds": 3 if funding_success else 1,
+            "previous_funding_rounds": np.random.randint(2, 6) if funding_success else np.random.randint(0, 3),
             "investor_count": investor_count,
             "total_raised": total_raised,
             "funding_success": funding_success

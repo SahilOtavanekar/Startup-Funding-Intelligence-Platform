@@ -7,35 +7,43 @@ import './Startups.css';
  */
 function Startups() {
     const [startups, setStartups] = useState([]);
+    const [allIndustries, setAllIndustries] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [totalMatches, setTotalMatches] = useState(0);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterIndustry, setFilterIndustry] = useState('');
 
+    // Fetch Industries once
     useEffect(() => {
-        const fetchStartups = async () => {
-            try {
-                const data = await getStartups();
-                setStartups(data.startups || []);
-            } catch (err) {
-                setError('Failed to load startups. Is the backend running?');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchStartups();
+        import('../services/api.js').then(api => {
+            api.getAvailableIndustries().then(data => setAllIndustries(data));
+        });
     }, []);
 
-    // Unique industries for filter
-    const industries = [...new Set(startups.map((s) => s.industry))].sort();
+    // Live search effect
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            fetchData();
+        }, 300); // 300ms debounce
+        return () => clearTimeout(handler);
+    }, [searchTerm, filterIndustry]);
 
-    // Filtered data
-    const filtered = startups.filter((s) => {
-        const matchesSearch = s.startup_name?.toLowerCase().includes(searchTerm.toLowerCase())
-            || s.location?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesIndustry = filterIndustry === '' || s.industry === filterIndustry;
-        return matchesSearch && matchesIndustry;
-    });
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const data = await getStartups(searchTerm, filterIndustry);
+            setStartups(data.startups || []);
+            setTotalMatches(data.total_matches || 0);
+        } catch (err) {
+            setError('Search failed. Check if backend is alive.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Since we filter on server, 'filtered' is just the 'startups' array now
+    const filtered = startups;
 
     if (loading) {
         return (
@@ -52,7 +60,7 @@ function Startups() {
                 Startup <span className="text-accent">Database</span>
             </h1>
             <p className="text-muted mb-xl" style={{ maxWidth: 550 }}>
-                Explore {startups.length} startups in our dataset. Filter by industry or search by name.
+                Explore all 3,044 startups in our dataset. Filter by industry or search by name.
             </p>
 
             {error && (
@@ -79,13 +87,13 @@ function Startups() {
                         onChange={(e) => setFilterIndustry(e.target.value)}
                     >
                         <option value="">All Industries</option>
-                        {industries.map((ind) => (
+                        {allIndustries.map((ind) => (
                             <option key={ind} value={ind}>{ind}</option>
                         ))}
                     </select>
                 </div>
                 <div className="filter-count text-muted">
-                    {filtered.length} of {startups.length}
+                    {totalMatches} of 3,044
                 </div>
             </div>
 

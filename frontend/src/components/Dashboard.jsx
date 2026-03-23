@@ -24,9 +24,9 @@ function Dashboard({ children }) {
                         <span className="nav-icon">📊</span>
                         Insights
                     </NavLink>
-                    <NavLink to="/predict" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
-                        <span className="nav-icon">🔮</span>
-                        Predict
+                    <NavLink to="/trending" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+                        <span className="nav-icon">🔥</span>
+                        Trending
                     </NavLink>
                     <NavLink to="/startups" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
                         <span className="nav-icon">🏢</span>

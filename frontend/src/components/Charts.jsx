@@ -71,6 +71,7 @@ function Charts() {
         industry_funding = [],
         success_rate = [],
         year_funding = [],
+        forecast_funding = [],
         round_distribution = [],
         location_distribution = [],
         team_by_success = [],
@@ -78,6 +79,22 @@ function Charts() {
         total_funded = 0,
         avg_funding = 0,
     } = data || {};
+
+    // Merge historical and forecast data for the trend chart
+    const allYears = Array.from(new Set([
+        ...year_funding.map(y => y.year),
+        ...forecast_funding.map(f => f.year)
+    ])).sort((a, b) => a - b);
+
+    const combinedTrendData = allYears.map(year => {
+        const hist = year_funding.find(y => y.year === year);
+        const fore = forecast_funding.find(f => f.year === year);
+        return {
+            year,
+            amount: hist ? hist.amount : null,
+            forecast: fore ? fore.forecast : null
+        };
+    });
 
     return (
         <div className="charts-container">
@@ -112,7 +129,15 @@ function Charts() {
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart data={industry_funding}>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                            <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} angle={-20} textAnchor="end" height={60} />
+                            <XAxis 
+                                dataKey="name" 
+                                tick={{ fill: '#94a3b8', fontSize: 10 }} 
+                                angle={-45} 
+                                textAnchor="end" 
+                                height={90} 
+                                interval={0}
+                                tickFormatter={(val) => val.length > 18 ? val.substring(0, 15) + '...' : val}
+                            />
                             <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="funding" name="Funding ($M)" radius={[6, 6, 0, 0]}>
@@ -132,7 +157,13 @@ function Charts() {
                         <BarChart data={success_rate} layout="vertical">
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                             <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 12 }} unit="%" />
-                            <YAxis dataKey="name" type="category" tick={{ fill: '#94a3b8', fontSize: 11 }} width={110} />
+                            <YAxis 
+                                dataKey="name" 
+                                type="category" 
+                                tick={{ fill: '#94a3b8', fontSize: 10 }} 
+                                width={150} 
+                                tickFormatter={(val) => val.length > 25 ? val.substring(0, 22) + '...' : val}
+                            />
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="success_rate" name="Success Rate (%)" radius={[0, 6, 6, 0]} fill="#34d399" />
                         </BarChart>
@@ -141,21 +172,57 @@ function Charts() {
 
                 {/* Funding Trend Over Time (Area) */}
                 <div className="glass-card chart-card chart-wide">
-                    <h4 className="chart-title">📈 Funding Trend Over Time</h4>
-                    <p className="chart-subtitle text-muted">Total funding raised by year (in millions $)</p>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h4 className="chart-title">📈 Funding Trend & ML Forecast</h4>
+                            <p className="chart-subtitle text-muted">Historical funding vs. Predictive analysis (millions $)</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem' }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <div style={{ width: 12, height: 2, background: '#22d3ee' }}></div> Historical
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <div style={{ width: 12, height: 2, borderTop: '2px dashed #fbbf24' }}></div> ML Forecast
+                            </span>
+                        </div>
+                    </div>
                     <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={year_funding}>
+                        <AreaChart data={combinedTrendData}>
                             <defs>
                                 <linearGradient id="colorFunding" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="5%" stopColor="#22d3ee" stopOpacity={0.3} />
                                     <stop offset="95%" stopColor="#22d3ee" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="colorForecast" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#fbbf24" stopOpacity={0.2} />
+                                    <stop offset="95%" stopColor="#fbbf24" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
                             <XAxis dataKey="year" tick={{ fill: '#94a3b8', fontSize: 12 }} />
                             <YAxis tick={{ fill: '#94a3b8', fontSize: 12 }} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Area type="monotone" dataKey="amount" name="Funding ($M)" stroke="#22d3ee" strokeWidth={3} fill="url(#colorFunding)" dot={{ r: 4, fill: '#22d3ee' }} />
+                            <Area 
+                                type="monotone" 
+                                dataKey="amount" 
+                                name="Historical ($M)" 
+                                stroke="#22d3ee" 
+                                strokeWidth={3} 
+                                fill="url(#colorFunding)" 
+                                dot={{ r: 4, fill: '#22d3ee' }} 
+                                connectNulls
+                            />
+                            <Area 
+                                type="monotone" 
+                                dataKey="forecast" 
+                                name="ML Forecast ($M)" 
+                                stroke="#fbbf24" 
+                                strokeWidth={3} 
+                                strokeDasharray="5 5"
+                                fill="url(#colorForecast)" 
+                                dot={{ r: 4, fill: '#fbbf24' }} 
+                                connectNulls
+                            />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>

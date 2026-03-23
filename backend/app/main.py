@@ -14,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from app.routes import prediction, analytics
+from app.routes import discovery, analytics
 from app.core.security import get_api_key
 from app.core.limiter import limiter
 
@@ -51,7 +51,7 @@ app.add_middleware(
 # ---------------------------------------------------------------------------
 # Routers
 # ---------------------------------------------------------------------------
-app.include_router(prediction.router, tags=["Prediction"], dependencies=[Depends(get_api_key)])
+app.include_router(discovery.router, prefix="/api/discovery", tags=["Discovery"], dependencies=[Depends(get_api_key)])
 app.include_router(analytics.router, tags=["Analytics"], dependencies=[Depends(get_api_key)])
 
 

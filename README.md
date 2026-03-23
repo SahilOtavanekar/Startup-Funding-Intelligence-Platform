@@ -1,95 +1,84 @@
-# Startup Funding Intelligence Platform
+# 🚀 Startup Funding Intelligence Platform
 
-An AI-powered web application that analyzes startup data, explores industry trends, and uses an **XGBoost** machine learning model to predict the probability of a startup securing funding.
+A high-performance, **ML-powered analytics platform** for uncovering insights into the Indian startup ecosystem. This project transforms historical Kaggle funding data into a live, interactive dashboard with predictive forecasting and growth momentum analysis.
 
-## Features
+---
 
-- 🔮 **Funding Predictor:** Input startup parameters (industry, team size, age, investor count) to get a live prediction of funding success. Includes feature importance to explain exactly *why* the model made its prediction.
-- 📈 **Industry Intelligence:** Interactive charts built with *Recharts* displaying funding distributions, success rates, location popularity, and timeline trends.
-- 🏢 **Startup Database:** A searchable, sortable database of startup records.
-- 🧪 **MLflow Tracking:** Integrated experiment tracking for reproducible machine learning model training.
-- 🎨 **Glassmorphism UI:** A sleek, modern dark-themed interface built from scratch using vanilla CSS variables and utility classes.
+## 🌟 Core Features
 
-## Tech Stack
+### 📊 **Interactive Insights Dashboard**
+*   **Funding Trends:** Historical analysis of capital infusion from 2015 to 2025.
+*   **Industry Benchmarks:** Success rate and total funding raised by sector (Fintech, E-Commerce, etc.).
+*   **Geo-Hub Analysis:** Geographic distribution of startups across India's top hubs (Bengaluru, Mumbai, NCR).
+*   **Round Distribution:** Breakdown of the ecosystem from Pre-Seed to Late Stage.
 
-- **Frontend:** React (Vite), React Router, Recharts, Axios
-- **Backend:** FastAPI, Python, Uvicorn
-- **Machine Learning:** XGBoost, Scikit-learn, Pandas, MLflow
-- **Database:** Supabase (PostgreSQL) - *Live data integration ready*
-- **Containerization:** Docker & Docker Compose
+### 🔮 **ML-Powered Market Forecasting**
+*   **Prophet Integration:** Uses the **Facebook Prophet** model to analyze historical funding waves and generate a 5-year predictive market forecast.
+*   **Smooth Connection:** Visual transition between historical data (Cyan) and predictive simulation (Gold).
 
-## Quick Start (Local Setup)
+### 🔥 **Trending Startups Leaderboard**
+*   **Growth Velocity Algorithm:** Ranks startups not just by "total raised," but by **Operational Momentum** (Capital Raised ÷ Company Age).
+*   **Momentum Score:** A proprietary 1–99 score based on funding velocity and investor backing.
 
-### 1. Clone & Environment
-Copy the example environment file and update it with your Supabase credentials (optional for testing, as local mock data is generated).
-```bash
-cp .env.example .env
-```
+### 🔎 **Global Startup Database**
+*   **Full-Text Search:** Search through all **3,044 preprocessed startup records** instantly.
+*   **Deep Filtering:** Filter the entire dataset by industry, age, or location with server-side performance.
 
-### 2. Startup Database & ML Model
-Generate synthetic data and train the model.
+---
+
+## 🛠️ Technology Stack
+
+*   **Backend:** Python 3.11, FastAPI, Pandas, Prophet (ML).
+*   **Frontend:** React, Vite, Recharts, Vanilla CSS (Glassmorphism).
+*   **Data Source:** Real Kaggle mirror of the **Indian Startup Funding** dataset.
+
+---
+
+## 🧪 Data Pipeline & Preprocessing
+
+The project features a standalone data cleaning engine (`seed_data.py`) that transforms raw funding logs into a research-ready database:
+*   **Imputation:** Mathematically infers missing company ages and team sizes based on capital ratios.
+*   **Normalization:** Merges historical naming conflicts (e.g., *Bangalore* → *Bengaluru*) to ensure statistical accuracy.
+*   **Classification:** Maps over 800+ raw industry verticals into clean, manageable categories.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+*   Python 3.11+
+*   Node.js 18+
+
+### 2. Backend Setup
 ```bash
 cd backend
+# 1. Create and activate a virtual environment
+python -m venv venv
+./venv/Scripts/activate 
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# Generate 500+ records of realistic startup data
-python -m app.scraping.seed_data
+# 3. Build & Preprocess the dataset
+python app/scraping/seed_data.py
 
-# Train the XGBoost model 
-python -m app.models.train_model
-```
-
-### 3. Run FastAPI Backend
-```bash
-cd backend
+# 4. Start the API server
 uvicorn app.main:app --reload
 ```
-The API documentation will be available at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-### 4. Run React Frontend
-In a new terminal:
+### 3. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-## Docker Deployment (Optional)
+---
 
-You can spin up the entire stack, including the MLflow tracking server, using Docker Compose:
+## 📄 API Security & Documentation
+*   **Protected Routes:** All analytics routes are gated with custom headers (`x-api-key`).
+*   **Auto-Docs:** Explore the full API schema at `http://localhost:8000/docs`.
 
-```bash
-docker-compose up --build
-```
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:8000
-- **MLflow Tracking:** http://localhost:5000
+---
 
-## Project Structure
-
-```text
-├── backend/                  # FastAPI + ML codebase
-│   ├── app/
-│   │   ├── models/           # train_model.py, model.pkl
-│   │   ├── routes/           # API endpoints (prediction, analytics)
-│   │   ├── scraping/         # Data generators & scraper logic
-│   │   ├── services/         # Model logic & Supabase queries
-│   │   └── utils/            # Feature engineering pipeline
-│   ├── migrations/           # Supabase SQL schema definitions
-│   └── requirements.txt
-├── frontend/                 # React application
-│   ├── public/
-│   └── src/
-│       ├── components/       # Reusable UI (Dashboard, Charts, PredictionForm)
-│       ├── pages/            # View views (Home, Insights, Predict, Startups)
-│       ├── services/         # Axios API & Supabase Client
-│       └── index.css         # Glassmorphism Design System
-├── docker-compose.yml        # Multi-container orchestration
-└── ...
-```
-
-## Future Enhancements
-- Connect the active web Scraper (`scraper.py`) to live sources like Crunchbase or YCombinator.
-- Add user authentication via Supabase Auth to track user-saved predictions.
-- Migrate from SQLite to an external PostgreSQL database for MLflow tracking.
+*Built for Data Science enthusiasts and Startup Founders.*

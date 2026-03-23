@@ -11,13 +11,26 @@ const api = axios.create({
     },
 });
 
-/**
- * Predict funding success probability for a startup.
- * @param {Object} data - { industry, team_size, startup_age, investor_count }
- * @returns {Promise<Object>} - { funding_success_probability, feature_importance }
- */
-export const predictFunding = async (data) => {
-    const response = await api.post('/predict', data);
+export const getAvailableIndustries = async () => {
+    const response = await api.get('/api/discovery/industries');
+    return response.data;
+};
+
+export const getAvailableLocations = async () => {
+    const response = await api.get('/api/discovery/locations');
+    return response.data;
+};
+
+export const getIndustryRoadmap = async (industry) => {
+    const response = await api.get('/api/discovery/roadmap', { params: { industry } });
+    return response.data;
+};
+
+export const getTrendingStartups = async (industry = null, location = null) => {
+    const params = {};
+    if (industry && industry !== 'All') params.industry = industry;
+    if (location && location !== 'All') params.location = location;
+    const response = await api.get('/api/discovery/trending', { params });
     return response.data;
 };
 
@@ -31,11 +44,14 @@ export const getIndustryTrends = async () => {
 };
 
 /**
- * Fetch startup records from backend.
- * @returns {Promise<Array>}
+ * Fetch startup records from backend with optional filters.
+ * @returns {Promise<Object>}
  */
-export const getStartups = async () => {
-    const response = await api.get('/startups');
+export const getStartups = async (search = '', industry = '') => {
+    const params = {};
+    if (search) params.search = search;
+    if (industry && industry !== 'All') params.industry = industry;
+    const response = await api.get('/startups', { params });
     return response.data;
 };
 

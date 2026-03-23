@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import PredictionForm from '../components/PredictionForm.jsx';
+import { Link } from 'react-router-dom';
 import { getIndustryTrends } from '../services/api.js';
 import './Home.css';
 
 /**
- * Home Page — platform overview + prediction tool.
+ * Home Page — platform overview + roadmap link.
  */
 function Home() {
     const [stats, setStats] = useState({
@@ -12,6 +12,7 @@ function Home() {
         total_funded: '—',
         avg_funding: '—',
         success_rate: '—',
+        total_industries: '—',
     });
 
     useEffect(() => {
@@ -26,6 +27,7 @@ function Home() {
                     total_funded: data.total_funded?.toLocaleString() || '—',
                     avg_funding: `$${data.avg_funding}M`,
                     success_rate: `${rate}%`,
+                    total_industries: `${data.total_industries}+`,
                 });
             } catch {
                 // Use defaults if API unavailable
@@ -38,18 +40,21 @@ function Home() {
         <div className="home-page animate-in">
             {/* Hero Section */}
             <section className="hero">
-                <div className="hero-badge">🚀 AI-Powered Analytics Platform</div>
+                <div className="hero-badge">🚀 Data-Driven Analytics Platform</div>
                 <h1 className="hero-title">
                     Startup Funding <span className="text-accent">Intelligence</span>
                 </h1>
                 <p className="hero-subtitle text-muted">
-                    Predict funding success probability, explore industry trends,
-                    and uncover insights across the startup ecosystem — powered by machine learning.
+                    Explore industry benchmarks, build strategic funding roadmaps,
+                    and uncover insights across the global startup ecosystem.
                 </p>
+                <Link to="/trending" className="btn btn-primary mt-md" style={{ display: 'inline-block', padding: '0.8rem 2rem', backgroundColor: 'var(--accent-color)', color: 'black', textDecoration: 'none', borderRadius: '4px', fontWeight: 'bold' }}>
+                    🔥 Top Growing Startups
+                </Link>
             </section>
 
             {/* Stats Row */}
-            <section className="stats-row grid-4 mb-xl">
+            <section className="stats-row grid-4 mb-xl mt-xl">
                 <div className="glass-card stat-card">
                     <div className="stat-icon">📊</div>
                     <p className="stat-value text-accent">{stats.success_rate}</p>
@@ -67,31 +72,19 @@ function Home() {
                 </div>
                 <div className="glass-card stat-card">
                     <div className="stat-icon">🌍</div>
-                    <p className="stat-value" style={{ color: '#a78bfa' }}>15+</p>
+                    <p className="stat-value" style={{ color: '#a78bfa' }}>{stats.total_industries}</p>
                     <p className="stat-label text-muted">Industries Covered</p>
                 </div>
             </section>
 
-            {/* Prediction Tool */}
-            <section>
-                <div className="section-header">
-                    <h2>Predict Funding Success</h2>
-                    <p className="text-muted">
-                        Input your startup parameters and our XGBoost model will estimate
-                        the probability of securing funding.
-                    </p>
-                </div>
-                <PredictionForm />
-            </section>
-
             {/* Features Section */}
-            <section className="features-section">
+            <section className="features-section mt-xl">
                 <h2 className="mb-lg">Platform <span className="text-accent">Capabilities</span></h2>
-                <div className="features-grid">
+                <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
                     <div className="glass-card feature-card">
-                        <div className="feature-icon">🔮</div>
-                        <h4>ML Predictions</h4>
-                        <p className="text-muted">XGBoost-powered predictions with SHAP explainability for transparent, data-driven insights.</p>
+                        <div className="feature-icon">🔥</div>
+                        <h4>Top Trending Startups</h4>
+                        <p className="text-muted">Discover companies with massive operational momentum based on their funding-to-age velocity.</p>
                     </div>
                     <div className="glass-card feature-card">
                         <div className="feature-icon">📈</div>
@@ -99,14 +92,14 @@ function Home() {
                         <p className="text-muted">Explore funding trends across industries, geographies, and time periods with interactive charts.</p>
                     </div>
                     <div className="glass-card feature-card">
-                        <div className="feature-icon">🧪</div>
-                        <h4>Experiment Tracking</h4>
-                        <p className="text-muted">MLflow integration for reproducible experiments, hyperparameter logging, and model versioning.</p>
+                        <div className="feature-icon">💼</div>
+                        <h4>Strategic Benchmarks</h4>
+                        <p className="text-muted">Analyze {stats.total_startups}+ real-world funding events to determine typical team sizes and funding milestones.</p>
                     </div>
                     <div className="glass-card feature-card">
                         <div className="feature-icon">⚡</div>
                         <h4>Real-time API</h4>
-                        <p className="text-muted">FastAPI backend serving predictions with sub-second response times and auto-generated docs.</p>
+                        <p className="text-muted">FastAPI backend serving aggregated insights with sub-second response times and auto-generated docs.</p>
                     </div>
                 </div>
             </section>

@@ -173,6 +173,11 @@ a:hover {
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
+.form-select option {
+  background-color: #1e293b; /* Matches surface-hover */
+  color: var(--color-text);
+}
+
 /* --- Layout ------------------------------------------------------------- */
 .page-container {
   max-width: 1280px;
