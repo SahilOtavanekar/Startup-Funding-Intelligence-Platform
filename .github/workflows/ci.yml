@@ -1,4 +1,4 @@
-name: Python Backend CI
+name: Startup Intelligence CI/CD
 
 on:
   push:
@@ -7,8 +7,11 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  test-backend:
+    name: Test Python Backend
     runs-on: ubuntu-latest
+    env:
+      API_KEY: "startup-intelligence-local-dev-key"
 
     steps:
     - uses: actions/checkout@v3
@@ -21,20 +24,51 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
+        # We need httpx for TestClient to work with async
+        pip install flake8 pytest httpx pandas prophet slowapi fastapi uvicorn python-dotenv
         if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt; fi
+
+    - name: Preprocess Data (Sync Data Step)
+      run: |
+        python backend/app/scraping/seed_data.py
+        # Optional: Sync 2025/2026 Unicorns
+        python backend/app/scraping/update_unicorns_2025.py
+      # Set PYTHONPATH so scripts can import 'app'
+      env:
+        PYTHONPATH: ${{ github.workspace }}/backend
 
     - name: Lint with flake8
       run: |
-        # stop the build if there are Python syntax errors or undefined names
         flake8 backend/app --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 backend/app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Start FastAPI Server Check (Mock run)
+    - name: Run Pytest
       run: |
-        export API_KEY="startup-intelligence-local-dev-key"
-        # Since we don't have Pytest cases right now, we can run a basic sanity check
-        # making sure the app actually boots up without crashing on imports.
-        python -c "from app.main import app; print('Backend loaded successfully')"
-      working-directory: ./backend
+        pytest -v backend/tests/test_api.py
+      env:
+        PYTHONPATH: ${{ github.workspace }}/backend
+
+  build-frontend:
+    name: Build React Frontend
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+    - name: Install & Build
+      run: |
+        cd frontend
+        npm install
+        npm run build --if-present
+
+  docker-check:
+    name: Docker Environment Check
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build and test Docker composition (dry run)
+      run: |
+        # Simply testing if the Dockerfile is valid and builds
+        docker build -t startup-api-test backend/
