@@ -1,84 +1,93 @@
 # 🚀 Startup Funding Intelligence Platform
 
-A high-performance, **ML-powered analytics platform** for uncovering insights into the Indian startup ecosystem. This project transforms historical Kaggle funding data into a live, interactive dashboard with predictive forecasting and growth momentum analysis.
+A state-of-the-art **MLOps-driven analytics engine** designed to decode the Indian startup ecosystem. This platform synthesizes historical Kaggle data with real-time news to provide predictive insights, growth momentum rankings, and deep-sector analytics.
+
+![Dashboard Preview](https://img.shields.io/badge/UI-Glassmorphism-blueviolet?style=for-the-badge)
+![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi)
+![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react)
+![ML](https://img.shields.io/badge/ML-Prophet%20%7C%20XGBoost-ff69b4?style=for-the-badge)
 
 ---
 
 ## 🌟 Core Features
 
-### 📊 **Interactive Insights Dashboard**
-*   **Funding Trends:** Historical analysis of capital infusion from 2015 to 2025.
-*   **Industry Benchmarks:** Success rate and total funding raised by sector (Fintech, E-Commerce, etc.).
-*   **Geo-Hub Analysis:** Geographic distribution of startups across India's top hubs (Bengaluru, Mumbai, NCR).
-*   **Round Distribution:** Breakdown of the ecosystem from Pre-Seed to Late Stage.
+### 📊 **Predictive Analytics Dashboard**
+*   **Time-Series Forecasting:** Leverages **Facebook Prophet** to model funding cycles and simulate a 5-year investment outlook.
+*   **Historical Context:** Visual comparisons between capital infusion trends (2015–2025) and predictive growth.
+*   **Success Metrics:** Automatic calculation of industry-specific success rates based on capital efficiency and funding velocity.
 
-### 🔮 **ML-Powered Market Forecasting**
-*   **Prophet Integration:** Uses the **Facebook Prophet** model to analyze historical funding waves and generate a 5-year predictive market forecast.
-*   **Smooth Connection:** Visual transition between historical data (Cyan) and predictive simulation (Gold).
+### 🔥 **Trending Startups & Live Discovery**
+*   **Momentum Ranking Algorithm:** A sophisticated scoring engine that ranks startups based on:
+    *   **Recent Activity (60%)**: Funding rounds in 2024–2025.
+    *   **Growth Velocity (30%)**: Annualized capital raised vs. company age.
+    *   **Stability (10%)**: Investor count and round depth.
+*   **Live Scraping:** Integrated **Economic Times (ETtech)** deals extractor for real-time market updates.
 
-### 🔥 **Trending Startups Leaderboard**
-*   **Growth Velocity Algorithm:** Ranks startups not just by "total raised," but by **Operational Momentum** (Capital Raised ÷ Company Age).
-*   **Momentum Score:** A proprietary 1–99 score based on funding velocity and investor backing.
-
-### 🔎 **Global Startup Database**
-*   **Full-Text Search:** Search through all **3,044 preprocessed startup records** instantly.
-*   **Deep Filtering:** Filter the entire dataset by industry, age, or location with server-side performance.
+### ⚙️ **Data Synthesis Engine**
+*   **Multi-Source Merging:** Deduplicates and standardizes data from Kaggle (Static) and ET (Real-time).
+*   **Smart Currency Normalization:** Converts "Cr" (Crores) and "Lakhs" into USD equivalents using dynamic exchange rates.
+*   **Entity Sanitization:** Proactively cleans unescaped unicode and normalizes geographical hubs (e.g., *Bangalore* → *Bengaluru*).
 
 ---
 
 ## 🛠️ Technology Stack
 
-*   **Backend:** Python 3.11, FastAPI, Pandas, Prophet (ML).
-*   **Frontend:** React, Vite, Recharts, Vanilla CSS (Glassmorphism).
-*   **Data Source:** Real Kaggle mirror of the **Indian Startup Funding** dataset.
+| Layer | Technologies |
+| :--- | :--- |
+| **Backend** | Python 3.11, FastAPI, Pandas, Selenium, Beautiful Soup 4 |
+| **Frontend** | React, Vite, Recharts, Framer Motion (Glassmorphism) |
+| **Machine Learning** | Facebook Prophet, XGBoost, Scikit-Learn |
+| **Ops & Tracking** | MLflow, GitHub Actions (CI/CD), Docker, Docker-compose |
+| **Security** | API Key Gatekeeping, Rate Limiting (SlowAPI) |
 
 ---
 
-## 🧪 Data Pipeline & Preprocessing
+## 🏗️ MLOps & CI/CD Pipeline
 
-The project features a standalone data cleaning engine (`seed_data.py`) that transforms raw funding logs into a research-ready database:
-*   **Imputation:** Mathematically infers missing company ages and team sizes based on capital ratios.
-*   **Normalization:** Merges historical naming conflicts (e.g., *Bangalore* → *Bengaluru*) to ensure statistical accuracy.
-*   **Classification:** Maps over 800+ raw industry verticals into clean, manageable categories.
+The project implements a robust transition from development to production:
+*   **Automated Testing:** Pytest suite for API reliability and data integrity.
+*   **Quality Gates:** Flake8 linting and type-checking integrated into GitHub Actions.
+*   **Containerization:** Full Docker support for both services with multi-stage builds.
+*   **Experiment Tracking:** MLflow integration for logging model parameters and performance metrics.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
-### 1. Prerequisites
-*   Python 3.11+
-*   Node.js 18+
+### 1. Requirements
+*   **Python:** 3.11+
+*   **Node.js:** 18+
+*   **Docker:** (Optional, for containerized run)
 
-### 2. Backend Setup
+### 2. Manual Setup
+
+**Backend:**
 ```bash
 cd backend
-# 1. Create and activate a virtual environment
-python -m venv venv
-./venv/Scripts/activate 
-
-# 2. Install dependencies
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-
-# 3. Build & Preprocess the dataset
-python app/scraping/seed_data.py
-
-# 4. Start the API server
+python app/scraping/seed_data.py  # Seed the intelligence brain
 uvicorn app.main:app --reload
 ```
 
-### 3. Frontend Setup
+**Frontend:**
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
+### 3. Docker One-Tap Launch
+```bash
+docker-compose up --build
+```
+
 ---
 
-## 📄 API Security & Documentation
-*   **Protected Routes:** All analytics routes are gated with custom headers (`x-api-key`).
-*   **Auto-Docs:** Explore the full API schema at `http://localhost:8000/docs`.
+## 📄 Documentation & API
+Accessible at `http://localhost:8000/docs`.  
+*Note: Ensure `x-api-key` is included in request headers for protected analytics routes.*
 
 ---
-
-*Built for Data Science enthusiasts and Startup Founders.*
+*Built with ❤️ for the Startup Ecosystem by Antigravity.*
